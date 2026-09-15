@@ -1,0 +1,79 @@
+---
+title: "STAT 330: Chapter 3.3 Activity Simulation"
+author: "Alana Unfried"
+format:
+  html:
+    embed-resources: true
+execute: 
+  warning: false
+  echo: true
+  error: false
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+#This particular code chunk has "include: false" which with override the global option "echo: true" and hide this chunk in the rendered file
+#echo: true in the YAML means the file will show code and output when it is rendered 
+
+
+#load packages that we will use in this file
+
+#mosaic allows us to work with data more easily, including ggformula for graphics
+library(mosaic)
+
+```
+
+# Welcome to Quarto and RStudio for STAT 330!
+
+In this file, we will explore the basics of RStudio.
+
+# Estimating a Population Total
+
+## Conduct a Simulation
+
+This simulation samples three values, with replacement, from the population of 7 amounts of money spent by each student. From the three values, it estimates the population total amount of money spent, using the formula learned in class. It does this sampling and estimation 1,000 different times, where in our class each student did this only three times! 
+
+```{r}
+
+#Set k to 1000 (in this case representing number if samples, NOT population size!)
+k <- 1000 
+#setting a seed lets us replicate our results. To perfectly match my results, use the same seed. Otherwise, choose any number for your own seed so you get the same results each time you run your code
+set.seed(12345)
+#create a vector of the population values
+totals <- c(17.62, 29.45, 48.43, 33.82, 13.36, 31.81, 19.74)
+#create an empty vector where the k tau-hat estimates will be stored
+estimates <- c(NA, ncol = 1, nrow = k)
+
+
+for(i in 1:k) #repeat everything in these brackets N times
+{
+  group <- sample(totals, 3, replace = TRUE) #sample 3 values with replacement
+  value1 <- group[1] #extract each value from the sample to use in calculation
+  value2 <- group[2]
+  value3 <- group[3]
+  estimates[i] <- (1/3)*(7*value1 + 7*value2 + 7*value3) #calculate tau-hat
+}
+
+```
+
+## Make a Histogram of Results
+
+The code then creates a histogram of all 1,000 estimates of the population total to see the distribution of estimates. 
+
+```{r}
+#this code uses the ggformula approach to graphics, as discussed in slides
+#you may have learned ggformula in MATH 320 or STAT 250
+
+#histogram of 1,000 tau-hat estimates
+#the |> symbol is called the "pipe." Read it as the phrase "and then"
+gf_histogram(~estimates) |>
+  #add a line at the true value of tau for comparison
+  gf_vline(color = "red", xintercept = ~ 194.32, linewidth = 1.5, data = NA) +
+  theme_minimal()
+```
+
+Note that this code does not read in any data from a separate file all the data is generative wihtin the file. Note that I do NOT expect you to be able to write a simulation like this for STAT 330! This is just an example. STAT 335 will teach you more code like this if you are interested. 
+
+
