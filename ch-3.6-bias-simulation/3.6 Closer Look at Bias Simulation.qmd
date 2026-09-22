@@ -1,0 +1,99 @@
+---
+title: "Biased vs Unbiased Estimator"
+author: "Alana Unfried"
+format:
+  html:
+    embed-resources: true
+execute: 
+  warning: false
+  echo: true
+  error: false
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+#This particular code chunk has "include: false" which with override the global option "echo: true" and hide this chunk in the rendered file
+#echo: true in the YAML means the file will show code and output when it is rendered 
+
+
+#load packages that we will use in this file
+
+#mosaic allows us to work with data more easily, including ggformula for graphics
+library(mosaic)
+
+```
+
+## Example of Biased Estimator
+
+This simulation of the sample standard deviation using a biased version, and an unbiased version, of the calculation.  
+
+
+```{r}
+#| label: simulation_function
+
+Sim <- function(reps)
+{ 	# the function starts here
+  
+  n <- 30 	  # sample size
+  mu <- 100 	# mean
+  stdev <- 10	# standard deviation
+  
+  unbiasedsd <- NULL	# initializing a vector
+  biasedsd   <- NULL	# initializing another vector
+  
+  for(i in 1:reps)
+  {
+    # generating n values from a Normal(mu,stdev) distribution
+    x <- rnorm(n,mu,stdev)	
+    
+    #s unbiased formula for the standard deviation (R default)
+    unbiasedsd[i] <- sd(x)	
+    
+    #sigma-hat biased formula for the standard deviation
+    biasedsd[i] <- sd(x)*sqrt((n-1)/n)	
+    
+  } # ending the FOR loop
+  
+  #print the average standard deviation calculation for each method
+  
+  avg.u <- mean(unbiasedsd)
+  print("Average Unbiased Estimate:")
+  print(avg.u)
+  
+  avg.b <- mean(biasedsd)
+  print("Average Biased Estimate:")
+  print(avg.b)
+  
+  print("True Value of SD:")
+  print(stdev)
+  
+  #graph the distributions of the sample standard deviations, and include a line for the true value of the population standard deviation
+  
+  #boxplot of sample standard deviations using the biased and unbiased formulas
+  boxplot(unbiasedsd,biasedsd,names=c("Unbiased 1/(n-1)","Biased 1/n"),main="Comparison of SD Estimates")
+  abline(h=10,lwd=4,col="red")
+  
+  #histograms of two standard deviation calculations
+  hist(unbiasedsd)
+  abline(v=10,lwd=4,col="red")
+  
+  hist(biasedsd)
+  abline(v=10,lwd=4,col="red")
+  
+  
+} 	# ending the function
+
+```
+
+Now run the simulation.
+
+```{r }
+#| label: run_simulation
+
+set.seed(27) #use any number you want in "set.seed"
+Sim(10000)	# running the simulation called Sim
+```
+
+Note that I do NOT expect you to be able to write R code like this! This is just an example. STAT 335 will teach you more code like this if you are interested. 
