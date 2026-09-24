@@ -1,0 +1,128 @@
+---
+title: "German Tanks Estimator"
+author: "Alana Unfried"
+format:
+  html:
+    embed-resources: true
+execute: 
+  warning: false
+  echo: true
+  error: false
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+#no R pakages are used for this code
+
+```
+
+# German Tanks
+
+## Summary Stats
+
+```{r}
+
+# Example of R code which generates a dotplot. Edit this with your own estimates   	 
+ages <- c(25, 33, 35, 38, 48, 55, 55, 55, 56, 64)
+
+#Create a dotplot
+stripchart(ages,method="stack",pch=16,cex=1.5)
+
+#average
+mean(ages)
+
+#variance
+var(ages)
+
+```
+
+
+
+## Simulation
+
+```{r}
+#| label: german_tanks_simulation_function
+
+Sim <- function(reps)
+{ 	# the function starts here
+  
+  N <- 600 	# as an example, let's assume that there are 600 tanks numbered 1,2,3,.....,600
+  k <- 5		# this is the number of tanks observed
+  
+  # initializing 7 vectors
+  estimator_A <- NULL		 
+  estimator_B <- NULL		 
+  estimator_C <- NULL		 
+  estimator_D <- NULL		 
+  estimator_E <- NULL		 
+  estimator_F <- NULL
+  estimator_G  <- NULL
+  estimator_best <- NULL		 
+  
+  for(i in 1:reps)
+  {
+    x <- seq(1,N)					# x is a vector with numbers 1,2,3,.....,N
+    
+    samp <- sample(x, k, replace = FALSE)		# randomly sampling k things from the x vector
+    
+    sorted <- sort(samp)
+    
+    ##You can add in your own estimator if you want!!
+    estimator_A[i] <- mean(samp) + 3*sd(samp)
+    estimator_B[i] <- 2*mean(samp)
+    estimator_C[i] <- (max(samp)-min(samp))/(k-1)
+    estimator_D[i] <- mean(samp)/max(samp)+sd(samp)+max(samp)
+    estimator_E[i] <- median(samp)*2
+    estimator_F[i] <- mean(samp) + 2*sd(samp)
+    estimator_G[i] <- max(samp)
+    
+    estimator_best[i] <- max(samp)+(max(samp)/k) - 1
+  } # ending the FOR loop
+  
+  avg.A <- mean(estimator_A)
+  avg.B <- mean(estimator_B)
+  avg.C <- mean(estimator_C)
+  avg.D <- mean(estimator_D)
+  avg.E <- mean(estimator_E)
+  avg.F <- mean(estimator_F)
+  avg.G <- mean(estimator_G)
+  avg.best <- mean(estimator_best)
+  
+  sd.A <- sd(estimator_A)
+  sd.B <- sd(estimator_B)
+  sd.C <- sd(estimator_C)
+  sd.D <- sd(estimator_D)
+  sd.E <- sd(estimator_E)
+  sd.F <- sd(estimator_F)
+  sd.G <- sd(estimator_G)
+  sd.best <- sd(estimator_best)
+  
+  averages <- c(avg.A, avg.B, avg.C, avg.D, avg.E, avg.F, avg.G, avg.best)
+  print("Average for Groups A, B, C, D, E, F, G, best:", quote=FALSE)
+  print(round(averages,2))
+  
+  SDvalues <- c(sd.A, sd.B, sd.C, sd.D, sd.E, sd.F, sd.G, sd.best)
+  print("Standard Deviation for Groups A, B, C, D, E, F, G, best:", quote=FALSE)
+  print(round(SDvalues,2))
+  
+  boxplot(estimator_A, estimator_B, estimator_C, estimator_D, estimator_E, estimator_F, estimator_G, estimator_best,  names=c("A","B","C", "D", "E", "F", "G", "best"),main="Comparison of 8 Estimators")
+  abline(h=600,lwd=4,col="red")
+
+  } # ending the function
+
+  
+
+```
+
+Now run the simulation.
+
+```{r }
+#| label: run_simulation
+
+# YOU CAN CHANGE THE NUMBER OF REPETITIONS IN THE SIMULATION!
+Sim(500) 
+```
+
+Which estimator was the best?
